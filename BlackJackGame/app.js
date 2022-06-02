@@ -4,13 +4,18 @@ let dealerValue = 0;
 let gameOver = false;
 let playerAceCount = 0;
 let dealerAceCount = 0;
+let playerBalance = 50;
+let betNum = 0;
 window.onload = startGame;
+
+
 function startGame() {
     let randomSuite;
     let randomNum;
     let randomFace;
     const suites = ["H","D","S","C"];
     const faces = ["K", "Q", "J"];
+    playerBalance -= betNum;
     for(let i = 0 ; i < 56 ; i++){
         randomNum = Math.floor((Math.random() * 12)) + 1;
         randomSuite = Math.floor(Math.random() * 3);
@@ -25,11 +30,9 @@ function startGame() {
         }
         cards.push(randomNum + "-" + suites[randomSuite]);
     }
-    console.log(cards)
     hit();
     hit();
     dealerStart();
-    console.log("start")
 
 }
 function dealerStart(){
@@ -95,6 +98,7 @@ function updateDealerValue(cSplit){
         dealerValue -= 10;
         dealerAceCount--;
     }
+    console.log(dealerValue)
     document.getElementById("dealer-sum").innerText = dealerValue;
 }
 
@@ -106,37 +110,60 @@ function stand(){
     let cardImg = document.createElement("img");
     let card = cards.pop();
     document.getElementById("back").src = "./cards/" + card + ".png";
+    updateDealerValue(card.split("-"));
     while(dealerValue < 17){
+    card = cards.pop()
     cardImg.src = "./cards/" + card + ".png";
     cardImg.className = "cards";
     document.getElementById("dealer-cards").append(cardImg);
-    let cSplit = card.split("-");
-    updateDealerValue(cSplit);
-}
-    console.log(dealerValue);
+    updateDealerValue(card.split("-"));
+    }
     updateWinner();
 }
 
 
 function updateWinner(){
-    if(playerValue > dealerValue && playerValue <= 21){
+    if(dealerValue > 21 && playerValue <= 21){
         document.getElementById("result").innerText = "Player Wins!"
+        playerBalance += (betNum * 2);
+        updateBalance()
+        return;
     }
-    else if(playerValue < dealerValue){
-        document.getElementById("result").innerText = "Dealer Wins!"
-    }
-    else{
+    if(playerValue == dealerValue && dealerValue <= 21 && playerValue <= 21){
         document.getElementById("result").innerText = "Draw";
+        updateBalance()
+        return;
     }
+    if(playerValue > dealerValue && playerValue <= 21 && dealerValue != playerValue && dealerValue < 21){
+        document.getElementById("result").innerText = "Player Wins!"
+        if(playerValue < 21){
+            playerBalance += (betNum * 2);
+            updateBalance()
+        }
+        else{
+            playerBalance += (betNum * 2.5);
+            updateBalance()
+        }
+    }
+    else if(playerValue < dealerValue && dealerValue <= 21 && dealerValue != playerValue){
+        document.getElementById("result").innerText = "Dealer Wins!"
+
+    }
+
 }
 
 function resetGame(){
+    if(document.getElementById("betSlider").value > playerBalance){
+        document.getElementById("currentBet").innerText = "Invalid Bet (greater than balance)"
+        return
+    }
     playerAceCount = 0
     playerValue = 0
     dealerAceCount = 0
     dealerValue = 0
+    betNum = document.getElementById("betSlider").value;
     gameOver = false
-    cards.splice(0, cards.length)
+    cards = []
 
     document.getElementById("your-cards").textContent = ''
     document.getElementById("dealer-cards").textContent = ''
@@ -150,8 +177,18 @@ function resetGame(){
     document.getElementById("result").innerText = ""
     document.getElementById("player-sum").innerText = "";
     document.getElementById("dealer-sum").innerText = "";
-    
+
+    document.getElementById("currentBet").innerText = "your currently betting " + betNum + "$"
+    document.getElementById("balanceAmt").innerText = playerBalance - betNum;
 
     startGame();
+}
+
+function updateBalance(){
+    document.getElementById("balanceAmt").innerText = playerBalance;
+}
+
+function updateSlider(){
+    document.getElementById("betAmt").innerText = document.getElementById("betSlider").value
 }
 

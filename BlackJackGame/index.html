@@ -8,18 +8,29 @@
   <link rel = "stylesheet" href="style.css"> 
   <script src="app.js"></script>
 </head>
-<body class="main">
-    <h1 class="center"> Dealer:<span id="dealer-sum"></span></h1>
-  <div id="dealer-cards">
+<body>
+  <div>
+    <h1 class="dealer-sum"> Dealer:<span id="dealer-sum">works</span> </h1>
+    <p class="balance">Balance: <span id="balanceAmt">50</span>$ </p>
+    <span id="currentBet">your currently betting 0$</span>
+
+  </div>
+  <div id="dealer-cards"><!--- fix this --->
+
     <img id="back"src="./cards/BACK.png" alt="" class="cards"> 
   </div>
   <div id="your-cards">  </div>
     <h1 class="center">Player:<span id="player-sum"></span></h1>
-    <br>
+    <div class="slidecontainer">
+      <p>You will bet: <span id="betAmt">0</span>$. Next round</p>
+      <input type="range" min="0" max="100" value="0" class="slider" id="betSlider" oninput="updateSlider()">
+    </div>
   <div>
+
+    <br>
       <button class="hitButton" id="hitId" onclick="hit()">Hit</button>
       <button class="standButton" id="stanId" onclick="stand()">Stand</button>
-      <button class="resetButton" id="resetId" onclick="resetGame()">Reset</button>
+      <button class="resetButton" id="resetId" onclick="resetGame()">Deal Cards</button>
   </div>
   <h1 id="result"></h1>
 </body>
